@@ -94,10 +94,9 @@ function main() {
     tray.setTitle(getSoundInfo());
 }
 
-/**
- * メニューバーのアイコン: ${__dirname}/icon_sound_output.jpg
- */
+// メニューバーのアイコン: ${__dirname}/icon_sound_output.jpg
 const backgroundIcon = path.join(__dirname, "./icon_sound_output.png");
+
 app.on("ready", () => {
     // 実行している環境がmacOSかを判定する
     const isMac = (process.platform === "darwin");

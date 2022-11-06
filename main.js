@@ -76,7 +76,7 @@ function getSoundInfo() {
             stdOutObj: stdOut.toString()
         }
 
-        showSound = (`${JSON.stringify(stdOutJson.stdOutObj)}`);
+        showSound = (`${JSON.stringify((stdOutJson.stdOutObj).replace(/\r?\n/g, "")).replace(/\r?"/g, "")}`);
         return showSound;
     } catch (e) {
         console.error("error: " + e);

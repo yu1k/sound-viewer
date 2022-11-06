@@ -24,7 +24,7 @@ $ npm install && npm run build
 
 ## Thanks
 
-Sound Viewer では [switchaudio-osx](https://github.com/deweller/switchaudio-osx) を使用しています。
+Sound Viewer ではサウンド出力デバイスを取得するため、 [switchaudio-osx](https://github.com/deweller/switchaudio-osx) を使用しています。
 
 ```
 $ brew install switchaudio-osx

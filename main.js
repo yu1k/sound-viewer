@@ -48,7 +48,7 @@ app.on("window-all-closed", () => {
 */
 // execSyncの実行結果を格納する変数
 let stdOut = null;
-function getSoundInfo() {
+function getCurrentSoundOutputSourceInfo() {
     // returnする内容を格納する変数
     let showSound = null;
 
@@ -90,8 +90,8 @@ function getSoundInfo() {
 
 let tray;
 function main() {
-    console.log("debug: " + getSoundInfo());
-    tray.setTitle(getSoundInfo());
+    console.log("debug: " + getCurrentSoundOutputSourceInfo());
+    tray.setTitle(getCurrentSoundOutputSourceInfo());
 }
 
 // メニューバーのアイコン: ${__dirname}/icon_sound_output.jpg

@@ -150,11 +150,18 @@ function getAllAudioSourceDevicesInfo(){
     }
 }
 
+/**
+ * Tray のタイトルについてsetとupdateをする関数
+ * この関数が最初に実行された際は、Trayのタイトルを設定する。すでに実行された後に再度実行されるとTrayのタイトルを最新の状態に更新する。
+ */
 let tray;
-function main() {
+function updateTrayTitle(){
+    return tray.setTitle(getCurrentSoundOutputSourceInfo());
+}
+
+function main(){
     console.log("debug: " + getCurrentSoundOutputSourceInfo());
     console.log("debug getAllAudioSourceDevicesInfo: " + getAllAudioSourceDevicesInfo());
-    tray.setTitle(getCurrentSoundOutputSourceInfo());
 }
 
 // メニューバーのアイコン: ${__dirname}/icon_sound_output.jpg
@@ -173,18 +180,18 @@ app.on("ready", () => {
     let menu = null;
     menu = new Menu.buildFromTemplate([{
         label: "状態を更新する",
-        click: main
-    }, {
+        click: updateTrayTitle
+    },{
         label: "Sound Viewer を終了",
         role: "quit"
     }]);
 
     tray = new Tray(backgroundIcon);
     tray.setContextMenu(menu);
-    main();
+    updateTrayTitle();
 
     // 更新のために3秒に一回実行する
-    setInterval(main, 3000);
+    setInterval(updateTrayTitle, 3000);
 
     // Dockのアプリアイコンを非表示にする
     app.dock.hide();

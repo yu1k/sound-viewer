@@ -64,19 +64,20 @@ function getCurrentSoundOutputSourceInfo() {
         // intel mac
         if (process.arch === "x64") {
             // brewでインストールしたコマンドなのでフルパスで指定したい
-            stdOut = execSync("/usr/local/bin/SwitchAudioSource -c");
+            stdOut = execSync("/usr/local/bin/SwitchAudioSource -c -f json");
         }
         // apple silicon mac
         if (process.arch === "arm64") {
             // brewでインストールしたコマンドなのでフルパスで指定したい
-            stdOut = execSync("/opt/homebrew/bin/SwitchAudioSource -c");
+            stdOut = execSync("/opt/homebrew/bin/SwitchAudioSource -c -f json");
         }
 
         let stdOutJson = {
             stdOutObj: stdOut.toString()
         }
 
-        showSound = (`${JSON.stringify((stdOutJson.stdOutObj).replace(/\r?\n/g, "")).replace(/"/g, "")}`);
+        // showSound = (`${JSON.stringify((stdOutJson.stdOutObj).replace(/\r?\n/g, "")).replace(/"/g, "")}`);
+        showSound = (JSON.parse(stdOut)).name;
         return showSound;
     } catch (e) {
         console.error("error: " + e);

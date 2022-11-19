@@ -89,9 +89,71 @@ function getCurrentSoundOutputSourceInfo() {
     // return showSound;
 };
 
+/**
+ * 引数に指定された配列からBooleanな値を要素削除する, もし引数に指定されたものが配列でない場合はreturnする。
+ * Boolean: 0, -0, null, false, NaN, undefined, ""等の空文字列
+ * reference: https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+ */
+ function removeElementsFalseValuesFromArray(argsArray){
+    if(!(Array.isArray(argsArray))){
+        console.error(`引数 ${argsArray} は配列ではありませんでした。` + "\n" + `引数 ${argsArray} のデータ型は ${typeof argsArray} でした。`);
+        return;
+    }
+    return argsArray.filter(Boolean);
+}
+
+/**
+ * マシンの環境におけるすべてのサウンドソースを取得する。
+ * JSONから文字列に変換し、各種データを整形後に文字列からJSONに変換してreturnで返す。
+ * TODO: 出力と入力ソースを分けてJSONに格納し、returnで返す。
+ */
+function getAllAudioSourceDevicesInfo(){
+    // SwitchAudioSource で取得したデータを格納する変数
+    let allAudioSourceDevices = null;
+    // 実行環境のアーキテクチャを取得する
+    const processArch = process.arch;
+
+    // SwitchAudioSource コマンド
+    // intel mac
+    const iSwitchAudioSourceCommand = "/usr/local/bin/SwitchAudioSource";
+    // Apple silicon mac
+    const appleSiliconSwitchAudioSourceCommand = "/opt/homebrew/bin/SwitchAudioSource";
+
+    try {
+        if(!(processArch === "x64" || processArch === "arm64")){
+            console.log("Intel macかApple Siliconのmacで実行してください。" + "\n" + "終了します。");
+            // Electron appを終了する
+            app.quit();
+        }
+        if(processArch === "x64"){
+            allAudioSourceDevices = execSync(`${iSwitchAudioSourceCommand} -a -f json`);
+        }
+        if(processArch === "arm64"){
+            allAudioSourceDevices = execSync(`${appleSiliconSwitchAudioSourceCommand} -a -f json`);
+        }
+        // JSONを文字列に変換し、改行ごとに分割して配列にする。
+        let allAudioSourceDevicesJsonToStr = new String(allAudioSourceDevices).split(/\r\n|\n/);
+        // 配列にfalseな要素が含まれていた場合は、それらの要素を削除する。
+        allAudioSourceDevicesJsonToStr = removeElementsFalseValuesFromArray(allAudioSourceDevicesJsonToStr);
+
+        // JSON形式に整形する。
+        // let allAudioSourceDevicesStrToJson = ("[" + allAudioSourceDevicesJsonToStr + "]");
+        let allAudioSourceDevicesStrToJson = JSON.stringify(allAudioSourceDevicesJsonToStr);
+
+        return allAudioSourceDevicesStrToJson;
+    } catch (e) {
+        console.error("error: " + e);
+        console.log("予期しないエラーが発生しました。" + "\n" + "終了します。");
+
+        // Electron appを終了する
+        app.quit();
+    }
+}
+
 let tray;
 function main() {
     console.log("debug: " + getCurrentSoundOutputSourceInfo());
+    console.log("debug getAllAudioSourceDevicesInfo: " + getAllAudioSourceDevicesInfo());
     tray.setTitle(getCurrentSoundOutputSourceInfo());
 }
 

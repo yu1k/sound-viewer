@@ -41,6 +41,15 @@ app.on("window-all-closed", () => {
     }
 });
 
+/****************************************/
+// 各種コマンド
+/****************************************/
+// SwitchAudioSourceコマンド
+// intel mac
+const iSwitchAudioSourceCommand = "/usr/local/bin/SwitchAudioSource";
+// Apple silicon mac
+const appleSiliconSwitchAudioSourceCommand = "/opt/homebrew/bin/SwitchAudioSource";
+
 /**
  *
  * メニューバーにサウンド出力デバイスを表示する
@@ -64,12 +73,12 @@ function getCurrentSoundOutputSourceInfo() {
         // intel mac
         if (process.arch === "x64") {
             // brewでインストールしたコマンドなのでフルパスで指定したい
-            stdOut = execSync("/usr/local/bin/SwitchAudioSource -c -f json");
+            stdOut = execSync(`${iSwitchAudioSourceCommand} -c -f json`);
         }
         // apple silicon mac
         if (process.arch === "arm64") {
             // brewでインストールしたコマンドなのでフルパスで指定したい
-            stdOut = execSync("/opt/homebrew/bin/SwitchAudioSource -c -f json");
+            stdOut = execSync(`${appleSiliconSwitchAudioSourceCommand} -c -f json`);
         }
 
         let stdOutJson = {
@@ -110,25 +119,17 @@ function getCurrentSoundOutputSourceInfo() {
 function getAllAudioSourceDevicesInfo(){
     // SwitchAudioSource で取得したデータを格納する変数
     let allAudioSourceDevices = null;
-    // 実行環境のアーキテクチャを取得する
-    const processArch = process.arch;
-
-    // SwitchAudioSource コマンド
-    // intel mac
-    const iSwitchAudioSourceCommand = "/usr/local/bin/SwitchAudioSource";
-    // Apple silicon mac
-    const appleSiliconSwitchAudioSourceCommand = "/opt/homebrew/bin/SwitchAudioSource";
 
     try {
-        if(!(processArch === "x64" || processArch === "arm64")){
+        if(!(process.arch=== "x64" || process.arch === "arm64")){
             console.log("Intel macかApple Siliconのmacで実行してください。" + "\n" + "終了します。");
             // Electron appを終了する
             app.quit();
         }
-        if(processArch === "x64"){
+        if(process.arch === "x64"){
             allAudioSourceDevices = execSync(`${iSwitchAudioSourceCommand} -a -f json`);
         }
-        if(processArch === "arm64"){
+        if(process.arch === "arm64"){
             allAudioSourceDevices = execSync(`${appleSiliconSwitchAudioSourceCommand} -a -f json`);
         }
         // JSONを文字列に変換し、改行ごとに分割して配列にする。
@@ -179,11 +180,6 @@ function createManuItem(){
 
     // 実行環境のアーキテクチャを取得する
     const processArch = process.arch;
-    // SwitchAudioSource コマンド
-    // intel mac
-    const iSwitchAudioSourceCommand = "/usr/local/bin/SwitchAudioSource";
-    // Apple silicon mac
-    const appleSiliconSwitchAudioSourceCommand = "/opt/homebrew/bin/SwitchAudioSource";
     let getAllAudioSourceDevicesInfoToObj = getAllAudioSourceDevicesInfo();
     for (let i = 0; i < getAllAudioSourceDevicesInfoToObj.length; i++) {
         if (JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).type === "output") {

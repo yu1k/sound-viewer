@@ -1,6 +1,6 @@
 "use strict";
 
-const { app, Menu, Tray, BrowserWindow } = require("electron");
+const { app, Menu, MenuItem, Tray, BrowserWindow } = require("electron");
 const path = require("path");
 const { execSync } = require("child_process");
 
@@ -138,9 +138,9 @@ function getAllAudioSourceDevicesInfo(){
 
         // JSON形式に整形する。
         // let allAudioSourceDevicesStrToJson = ("[" + allAudioSourceDevicesJsonToStr + "]");
-        let allAudioSourceDevicesStrToJson = JSON.stringify(allAudioSourceDevicesJsonToStr);
+        // let allAudioSourceDevicesStrToJson = JSON.stringify(allAudioSourceDevicesJsonToStr);
 
-        return allAudioSourceDevicesStrToJson;
+        return allAudioSourceDevicesJsonToStr;
     } catch (e) {
         console.error("error: " + e);
         console.log("予期しないエラーが発生しました。" + "\n" + "終了します。");
@@ -164,6 +164,53 @@ function main(){
     console.log("debug getAllAudioSourceDevicesInfo: " + getAllAudioSourceDevicesInfo());
 }
 
+/**
+ * メニューアイテムを作成する関数
+ */
+function createManuItem(){
+    // 新しいメニューを作成する
+    let menu = null;
+    // メニューに動的に変更する
+    // let menuItemArray = new MenuItem();
+    menu = new Menu()
+    menu.append(new MenuItem({ label: "状態を更新する", click: () => { updateTrayTitle } }));
+    menu.append(new MenuItem({ type: 'separator' }));
+    menu.append(new MenuItem({ label: "サウンド出力のデバイスを変更する", enabled: false }));
+
+    // 実行環境のアーキテクチャを取得する
+    const processArch = process.arch;
+    // SwitchAudioSource コマンド
+    // intel mac
+    const iSwitchAudioSourceCommand = "/usr/local/bin/SwitchAudioSource";
+    // Apple silicon mac
+    const appleSiliconSwitchAudioSourceCommand = "/opt/homebrew/bin/SwitchAudioSource";
+    let getAllAudioSourceDevicesInfoToObj = getAllAudioSourceDevicesInfo();
+    for (let i = 0; i < getAllAudioSourceDevicesInfoToObj.length; i++) {
+        if (JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).type === "output") {
+            menu.append(new MenuItem({
+                    label: `${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name} を選択`,
+                    click: () => {
+                        if(!(processArch === "x64" || processArch === "arm64")){
+                            console.log("Intel macかApple Siliconのmacで実行してください。" + "\n" + "終了します。");
+                            // Electron appを終了する
+                            app.quit();
+                        }
+                        if(processArch === "x64"){
+                            execSync(`${iSwitchAudioSourceCommand} -t output -s "${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name}"`);
+                        }
+                        if(processArch === "arm64"){
+                            execSync(`${appleSiliconSwitchAudioSourceCommand} -t output -s "${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name}"`);
+                        }
+                    }
+            }));
+        }
+    }
+    menu.append(new MenuItem({ type: 'separator' }));
+    menu.append(new MenuItem({ label: "Sound Viewer を終了", role: "quit" }));
+
+    return menu;
+}
+
 // メニューバーのアイコン: ${__dirname}/icon_sound_output.jpg
 const backgroundIcon = path.join(__dirname, "./icon_sound_output.png");
 
@@ -176,22 +223,16 @@ app.on("ready", () => {
         app.quit();
     }
 
-    // 新しいメニューを作成する
-    let menu = null;
-    menu = new Menu.buildFromTemplate([{
-        label: "状態を更新する",
-        click: updateTrayTitle
-    },{
-        label: "Sound Viewer を終了",
-        role: "quit"
-    }]);
-
+    // set Tray
     tray = new Tray(backgroundIcon);
-    tray.setContextMenu(menu);
+    tray.setContextMenu(createManuItem());
+    // 初回の実行
     updateTrayTitle();
 
     // 更新のために3秒に一回実行する
     setInterval(updateTrayTitle, 3000);
+    // メニューバーのアイテム(各種サウンドデバイス等)を更新するため、10秒に一回実行する
+    setInterval(createManuItem, 10000);
 
     // Dockのアプリアイコンを非表示にする
     app.dock.hide();

@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    types: [ opened ]
+
+jobs:
+  # macOS 用の job 定義
+  ci_on_macos:
+    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        node-version: [18.12.0]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        #cache: "npm"
+
+    - name: npm install
+      run: npm install
+    # ここでテストコードを実行する
+    - name: run UnitTest
+      run: npm run test

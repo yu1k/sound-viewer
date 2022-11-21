@@ -24,6 +24,9 @@ jobs:
         node-version: ${{ matrix.node-version }}
         #cache: "npm"
 
+    # Install switchaudio-osx
+    - name: Install switchaudio-osx
+      run: brew install switchaudio-osx
     - name: npm install
       run: npm install
     # ここでテストコードを実行する

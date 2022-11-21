@@ -22,6 +22,14 @@ $ git clone https://github.com/yu1k/sound-viewer sound-viewer && cd $_
 $ npm install && npm run build
 ```
 
+## Run test
+
+```
+$ npm run test
+```
+
+自動テストを実行する。
+
 ## Thanks
 
 Sound Viewer ではサウンド出力デバイスを取得するため、 [switchaudio-osx](https://github.com/deweller/switchaudio-osx) を使用しています。

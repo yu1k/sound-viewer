@@ -191,23 +191,21 @@ function createManuItem(){
  * 各種サウンド出力デバイスをメニューバーのコンテキストメニューに表示 && メニューバーのコンテキストメニューから選択するための関数
  */
 function selectSoundOutputDevicesFromContextMenuItem(){
-    // 実行環境のアーキテクチャを取得する
-    const processArch = process.arch;
     let getAllAudioSourceDevicesInfoToObj = getAllAudioSourceDevicesInfo();
     for (let i = 0; i < getAllAudioSourceDevicesInfoToObj.length; i++) {
         if (JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).type === "output") {
             menu.append(new MenuItem({
                 label: `${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name} を選択`,
                 click: () => {
-                    if (!(processArch === "x64" || processArch === "arm64")) {
+                    if (!(process.arch === "x64" || process.arch === "arm64")) {
                         console.log("Intel macかApple Siliconのmacで実行してください。" + "\n" + "終了します。");
                         // Electron appを終了する
                         app.quit();
                     }
-                    if (processArch === "x64") {
+                    if (process.arch === "x64") {
                         execSync(`${iSwitchAudioSourceCommand} -t output -s "${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name}"`);
                     }
-                    if (processArch === "arm64") {
+                    if (process.arch === "arm64") {
                         execSync(`${appleSiliconSwitchAudioSourceCommand} -t output -s "${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name}"`);
                     }
                 }

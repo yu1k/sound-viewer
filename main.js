@@ -155,14 +155,10 @@ function getAllAudioSourceDevicesInfo(){
  * Tray のタイトルについてsetとupdateをする関数
  * この関数が最初に実行された際は、Trayのタイトルを設定する。すでに実行された後に再度実行されるとTrayのタイトルを最新の状態に更新する。
  */
-let tray;
+// Trayを格納する変数
+let tray = null;
 function updateTrayTitle(){
     return tray.setTitle(getCurrentSoundOutputSourceInfo());
-}
-
-function main(){
-    console.log("debug: " + getCurrentSoundOutputSourceInfo());
-    console.log("debug getAllAudioSourceDevicesInfo: " + getAllAudioSourceDevicesInfo());
 }
 
 /**
@@ -183,6 +179,8 @@ function createManuItem(){
 
     menu.append(new MenuItem({ type: 'separator' }));
     menu.append(new MenuItem({ label: "Sound Viewer を終了", role: "quit" }));
+
+    tray.setContextMenu(menu);
 
     return menu;
 }
@@ -214,8 +212,24 @@ function selectSoundOutputDevicesFromContextMenuItem(){
     }
 }
 
+/**
+ * メニューバーのTrayアイテム、メニューアイテム等を更新する関数
+ */
+function updateMenuItem(){
+    updateTrayTitle();
+    createManuItem();
+}
+
 // メニューバーのアイコン: ${__dirname}/icon_sound_output.jpg
 const backgroundIcon = path.join(__dirname, "./icon_sound_output.png");
+/**
+ * メニューバーにおいてテンプレートを作成する関数。初期実行したあとは変動しない情報の処理をこの関数に記述する。1回だけ実行する。
+ */
+function initializeMenu(){
+    // backgroundIcon を利用して tray アイコンを作成する
+    tray = new Tray(backgroundIcon);
+    return tray;
+}
 
 app.on("ready", () => {
     // 実行している環境がmacOSかを判定する
@@ -226,16 +240,13 @@ app.on("ready", () => {
         app.quit();
     }
 
-    // set Tray
-    tray = new Tray(backgroundIcon);
-    tray.setContextMenu(createManuItem());
-    // 初回の実行
-    updateTrayTitle();
+    // appが起動した際の初回のみで実行する
+    initializeMenu();
 
-    // メニューバーのTrayタイトルを更新するために3秒に一回実行する
-    setInterval(updateTrayTitle, 3000);
-    // メニューバーのアイテム(各種サウンドデバイス等)を更新するため、10秒に一回実行する
-    setInterval(createManuItem, 10000);
+    // appが起動した際に初回のメニュー生成で実行する, その後はあとのsetIntervalをかけて自動で更新する処理に任せる。
+    updateMenuItem();
+    // メニューバーのTrayタイトル, メニューアイテム(各種サウンドデバイス等)を更新するために3秒に一回、updateMenuItem関数を実行する。
+    setInterval(updateMenuItem, 3000);
 
     // Dockのアプリアイコンを非表示にする
     app.dock.hide();

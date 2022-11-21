@@ -165,6 +165,8 @@ function main(){
     console.log("debug getAllAudioSourceDevicesInfo: " + getAllAudioSourceDevicesInfo());
 }
 
+
+
 /**
  * メニューアイテムを作成する関数
  */
@@ -225,7 +227,7 @@ app.on("ready", () => {
     // 初回の実行
     updateTrayTitle();
 
-    // 更新のために3秒に一回実行する
+    // メニューバーのTrayタイトルを更新するために3秒に一回実行する
     setInterval(updateTrayTitle, 3000);
     // メニューバーのアイテム(各種サウンドデバイス等)を更新するため、10秒に一回実行する
     setInterval(createManuItem, 10000);

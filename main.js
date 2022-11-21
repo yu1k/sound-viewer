@@ -168,11 +168,12 @@ function main(){
 /**
  * メニューアイテムを作成する関数
  */
-// 新しいメニューを作成する
+// メニューを格納する変数
 let menu = null;
 function createManuItem(){
     // メニューに動的に変更する
     // let menuItemArray = new MenuItem();
+    // 新しいメニューを作成する
     menu = new Menu()
     menu.append(new MenuItem({ label: "状態を更新する", click: () => { updateTrayTitle } }));
     menu.append(new MenuItem({ type: 'separator' }));

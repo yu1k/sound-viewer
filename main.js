@@ -165,14 +165,12 @@ function main(){
     console.log("debug getAllAudioSourceDevicesInfo: " + getAllAudioSourceDevicesInfo());
 }
 
-
-
 /**
  * メニューアイテムを作成する関数
  */
+// 新しいメニューを作成する
+let menu = null;
 function createManuItem(){
-    // 新しいメニューを作成する
-    let menu = null;
     // メニューに動的に変更する
     // let menuItemArray = new MenuItem();
     menu = new Menu()
@@ -180,33 +178,41 @@ function createManuItem(){
     menu.append(new MenuItem({ type: 'separator' }));
     menu.append(new MenuItem({ label: "サウンド出力のデバイスを変更する", enabled: false }));
 
+    selectSoundOutputDevicesFromContextMenuItem();
+
+    menu.append(new MenuItem({ type: 'separator' }));
+    menu.append(new MenuItem({ label: "Sound Viewer を終了", role: "quit" }));
+
+    return menu;
+}
+
+/**
+ * 各種サウンド出力デバイスをメニューバーのコンテキストメニューに表示 && メニューバーのコンテキストメニューから選択するための関数
+ */
+function selectSoundOutputDevicesFromContextMenuItem(){
     // 実行環境のアーキテクチャを取得する
     const processArch = process.arch;
     let getAllAudioSourceDevicesInfoToObj = getAllAudioSourceDevicesInfo();
     for (let i = 0; i < getAllAudioSourceDevicesInfoToObj.length; i++) {
         if (JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).type === "output") {
             menu.append(new MenuItem({
-                    label: `${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name} を選択`,
-                    click: () => {
-                        if(!(processArch === "x64" || processArch === "arm64")){
-                            console.log("Intel macかApple Siliconのmacで実行してください。" + "\n" + "終了します。");
-                            // Electron appを終了する
-                            app.quit();
-                        }
-                        if(processArch === "x64"){
-                            execSync(`${iSwitchAudioSourceCommand} -t output -s "${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name}"`);
-                        }
-                        if(processArch === "arm64"){
-                            execSync(`${appleSiliconSwitchAudioSourceCommand} -t output -s "${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name}"`);
-                        }
+                label: `${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name} を選択`,
+                click: () => {
+                    if (!(processArch === "x64" || processArch === "arm64")) {
+                        console.log("Intel macかApple Siliconのmacで実行してください。" + "\n" + "終了します。");
+                        // Electron appを終了する
+                        app.quit();
                     }
+                    if (processArch === "x64") {
+                        execSync(`${iSwitchAudioSourceCommand} -t output -s "${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name}"`);
+                    }
+                    if (processArch === "arm64") {
+                        execSync(`${appleSiliconSwitchAudioSourceCommand} -t output -s "${JSON.parse(getAllAudioSourceDevicesInfoToObj[i]).name}"`);
+                    }
+                }
             }));
         }
     }
-    menu.append(new MenuItem({ type: 'separator' }));
-    menu.append(new MenuItem({ label: "Sound Viewer を終了", role: "quit" }));
-
-    return menu;
 }
 
 // メニューバーのアイコン: ${__dirname}/icon_sound_output.jpg

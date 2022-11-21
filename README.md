@@ -1,4 +1,6 @@
-# Sound Viewer
+# Sound Viewer 
+
+[![CI](https://github.com/yu1k/sound-viewer/actions/workflows/ci.yml/badge.svg)](https://github.com/yu1k/sound-viewer/actions/workflows/ci.yml)
 
 ## description
 

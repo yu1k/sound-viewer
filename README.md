@@ -5,8 +5,8 @@
 ## description
 
 <p>
-  <img src="./assets/image01.jpg" width="200px" height="100">
-  <img src="./assets/image02.jpg" width="200px" height="100">
+  <img src="./assets/image01.jpg" width="240px" height="120px">
+  <img src="./assets/image02.jpg" width="240px" height="120px">
 </p>
 
 macのメニューバーに現在のサウンド出力で使用しているデバイスを表示, サウンド出力に使用するデバイスをメニューバーから選択することができるElectronアプリです。

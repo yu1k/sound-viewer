@@ -3,7 +3,7 @@
 const lib = require("../lib/lib");
 
 // テンプレート
-describe("runs template", ()=>{
+describe("runs template", () => {
     test("1は1であることを確認する", () => {
         expect(1).toBe(1);
     });
@@ -29,11 +29,11 @@ describe("lib モジュールをテストする。", () => {
     });
 
 
-    test("メニューバーに設置するTrayアイコンのパスを取得できているか入っているか。", () => {
+    test("メニューバーに設置するTrayアイコンのパスを取得できているか。", () => {
         expect(typeof (lib.backgroundIcon)).toBe("string");
     });
 
-    test("lib.getCurrentSoundOutputSourceInfo() で値を取得できているか入っているか。", () => {
+    test("lib.getCurrentSoundOutputSourceInfo() で値を取得できているか。", () => {
         expect(typeof lib.getCurrentSoundOutputSourceInfo()).toBe("string"||"object");
     });
-})
+});

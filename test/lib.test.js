@@ -28,12 +28,19 @@ describe("lib モジュールをテストする。", () => {
         expect(lib.removeElementsFalseValuesFromArray(1)).toBe(undefined);
     });
 
-
+    // trayアイコンのテスト
     test("メニューバーに設置するTrayアイコンのパスを取得できているか。", () => {
         expect(typeof (lib.backgroundIcon)).toBe("string");
+    });
+    test("メニューバーに設置するTrayアイコンのパスを取得できているか。lib.backgroundIcon 変数に .png という文字列が含まれているか。", () => {
+        expect((lib.backgroundIcon.indexOf(".png") != -1)).toStrictEqual(true);
+    });
+    test("メニューバーに設置するTrayアイコンのパスを取得できているか。lib.backgroundIcon 変数にアイコンのパスが含まれているか。含まれていた場合は配列(typeofで判定)が含まれているか。", () => {
+        expect(typeof (lib.backgroundIcon.match(/icon_sound_output.png/))).toStrictEqual("object");
     });
 
     test("lib.getCurrentSoundOutputSourceInfo() で値を取得できているか。", () => {
         expect(typeof lib.getCurrentSoundOutputSourceInfo()).toBe("string"||"object");
     });
+
 });

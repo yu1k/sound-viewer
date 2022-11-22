@@ -4,6 +4,9 @@
 
 ## description
 
+<img src="./assets/image01.jpg" width="200px" height="100">
+<img src="./assets/image02.jpg" width="200px" height="100">
+
 macのメニューバーに現在のサウンド出力しているデバイスを表示するElectronアプリです。
 
 バックグラウンドで動きます。
